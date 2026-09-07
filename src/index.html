@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liberation: Insurgents Alpha 0.1</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <div id="menuContainer" class="menu-container">
+        <div class="menu">
+            <h1>LIBERATION: INSURGENTS</h1>
+            <div class="menu-version">Alpha 0.1</div>
+            <button id="deployBtn" class="menu-button">DEPLOY</button>
+            <button id="loadProgressBtn" class="menu-button secondary-button">LOAD PROGRESS</button>
+            <button id="settingsBtn" class="menu-button">SETTINGS</button>
+            <button id="quitBtn" class="menu-button">QUIT</button>
+        </div>
+    </div>
+
+    <div id="loadingScreen" class="loading-screen hidden">
+        <div class="loading-container">
+            <h2>LOADING MISSION</h2>
+            <div class="loading-bar-container">
+                <div id="loadingBar" class="loading-bar"></div>
+            </div>
+            <div id="loadingPercent" class="loading-percent">0%</div>
+        </div>
+    </div>
+
+    <!-- Blood damage overlay -->
+    <div id="bloodOverlay" class="blood-overlay"></div>
+
+    <!-- Minimal UI - hidden by default -->
+    <div id="gameUI" class="game-ui hidden">
+        <div id="ammoDisplay" class="ammo-display">
+            <div id="ammoText">30 / 120</div>
+        </div>
+    </div>
+
+    <div id="pauseMenu" class="pause-menu hidden">
+        <div class="pause-content">
+            <h2>PAUSED</h2>
+            <button id="saveProgressBtn" class="menu-button secondary-button">SAVE PROGRESS</button>
+            <button id="resumeBtn" class="menu-button">RESUME</button>
+            <button id="mainMenuBtn" class="menu-button">MAIN MENU</button>
+        </div>
+    </div>
+
+    <div id="deathScreen" class="death-screen hidden">
+        <div class="death-content">
+            <h2>MISSION FAILED</h2>
+            <p>You have been eliminated.</p>
+            <button id="restartBtn" class="menu-button">RESTART</button>
+            <button id="menuFromDeathBtn" class="menu-button">MAIN MENU</button>
+        </div>
+    </div>
+
+    <div id="missionComplete" class="mission-complete hidden">
+        <div class="complete-content">
+            <h2>MISSION COMPLETE</h2>
+            <p id="completeStats"></p>
+            <button id="nextMissionBtn" class="menu-button">NEXT MISSION</button>
+            <button id="menuFromCompleteBtn" class="menu-button">MAIN MENU</button>
+        </div>
+    </div>
+
+    <div id="settingsMenu" class="settings-menu hidden">
+        <div class="settings-content">
+            <h2>SETTINGS</h2>
+            <div class="settings-tabs" role="tablist">
+                <button class="settings-tab active" data-settings-tab="audio">Audio</button>
+                <button class="settings-tab" data-settings-tab="input">Input</button>
+                <button class="settings-tab" data-settings-tab="graphics">Graphics</button>
+            </div>
+            <section class="settings-panel active" data-settings-panel="audio">
+                <div class="settings-group">
+                    <label for="volumeSlider">Master Volume <output id="volumeValue">70%</output></label>
+                    <input type="range" id="volumeSlider" min="0" max="100" value="70">
+                </div>
+                <div class="settings-group settings-row">
+                    <label for="muteToggle">Mute audio</label>
+                    <input type="checkbox" id="muteToggle">
+                </div>
+            </section>
+            <section class="settings-panel" data-settings-panel="input">
+                <div class="settings-group">
+                    <label for="sensitivitySlider">Mouse Sensitivity <output id="sensitivityValue">1.0x</output></label>
+                    <input type="range" id="sensitivitySlider" min="0.1" max="2" value="1" step="0.1">
+                </div>
+                <div class="settings-group">
+                    <label>Keybinds <small>Select a button, then press a key</small></label>
+                    <div id="keybindList" class="keybind-list"></div>
+                </div>
+            </section>
+            <section class="settings-panel" data-settings-panel="graphics">
+                <div class="settings-group">
+                    <label for="graphicsQuality">Graphics Preset</label>
+                    <select id="graphicsQuality">
+                        <option value="very-low">Very Low</option>
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                        <option value="very-high">Very High</option>
+                        <option value="ultra">Ultra</option>
+                        <option value="custom">Custom</option>
+                    </select>
+                </div>
+                <div class="settings-group">
+                    <button id="recommendGraphicsBtn" class="menu-button secondary-button">RECOMMEND GRAPHICS</button>
+                    <div id="recommendStatus" class="settings-status hidden" aria-live="polite"></div>
+                </div>
+                <div id="customGraphics" class="custom-graphics hidden">
+                    <div class="settings-group settings-row"><label for="shadowsToggle">Dynamic shadows</label><input type="checkbox" id="shadowsToggle" checked></div>
+                    <div class="settings-group settings-row"><label for="fogToggle">Distance fog</label><input type="checkbox" id="fogToggle" checked></div>
+                    <div class="settings-group"><label for="renderScale">Render scale <output id="renderScaleValue">100%</output></label><input type="range" id="renderScale" min="50" max="100" value="100" step="10"></div>
+                </div>
+                <button id="exportGraphicsBtn" class="menu-button secondary-button">EXPORT .CFG</button>
+                <button id="chooseSaveFolderBtn" class="menu-button secondary-button">SET SAVE FOLDER</button>
+                <div id="settingsStatus" class="settings-status" aria-live="polite"></div>
+            </section>
+            <button id="closeSettingsBtn" class="menu-button">BACK</button>
+        </div>
+    </div>
+
+    <div id="graphicsRecommendationPopup" class="graphics-popup hidden" role="dialog" aria-modal="true" aria-labelledby="graphicsPopupTitle">
+        <div class="graphics-popup-content">
+            <h2 id="graphicsPopupTitle">GRAPHICS RECOMMENDATION</h2>
+            <p id="detectedGpuText"></p>
+            <p>Choose your preferred performance:</p>
+            <div class="graphics-choice-list">
+                <button class="menu-button graphics-choice" data-graphics-goal="performance">BEST PERFORMANCE</button>
+                <button class="menu-button graphics-choice" data-graphics-goal="fps">60 FPS</button>
+                <button class="menu-button graphics-choice" data-graphics-goal="quality">BEST QUALITY</button>
+            </div>
+            <button id="closeGraphicsPopupBtn" class="menu-button secondary-button">CANCEL</button>
+        </div>
+    </div>
+
+    <script src="utils/math.js"></script>
+    <script src="renderer/webgl.js"></script>
+    <script src="renderer/shader.js"></script>
+    <script src="renderer/mesh.js"></script>
+    <script src="renderer/material.js"></script>
+    <script src="game/input.js"></script>
+    <script src="game/player.js"></script>
+    <script src="game/weapon.js"></script>
+    <script src="game/ballistics.js"></script>
+    <script src="game/enemy.js"></script>
+    <script src="game/level.js"></script>
+    <script src="game/ui.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+    <script src="renderer/pbr-materials.js"></script>
+    <script src="renderer/three-renderer.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

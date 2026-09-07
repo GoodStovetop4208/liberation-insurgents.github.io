@@ -1,0 +1,1 @@
+// The game is loaded with classic scripts from index.html so it also works from file://.

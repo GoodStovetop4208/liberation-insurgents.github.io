@@ -1,0 +1,518 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: 'Arial', sans-serif;
+    background: #000;
+}
+
+#gameCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Menu Styles */
+.menu-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.menu-container.hidden {
+    display: none;
+}
+
+.menu {
+    text-align: center;
+    padding: 60px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00ff00;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+}
+
+.menu h1 {
+    font-size: 48px;
+    color: #00ff00;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+    letter-spacing: 3px;
+}
+
+.menu-version {
+    color: #888;
+    margin-bottom: 40px;
+    font-size: 14px;
+}
+
+.menu-button {
+    display: block;
+    width: 200px;
+    margin: 15px auto;
+    padding: 12px;
+    background: transparent;
+    border: 2px solid #00ff00;
+    color: #00ff00;
+    font-size: 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.3s;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.menu-button:hover {
+    background: rgba(0, 255, 0, 0.1);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+    transform: scale(1.05);
+}
+
+.menu-button:active {
+    background: rgba(0, 255, 0, 0.2);
+}
+
+/* Settings Menu */
+.settings-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.settings-menu.hidden {
+    display: none;
+}
+
+.settings-content {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #00ff00;
+    padding: 40px;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+    width: min(560px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
+}
+
+.settings-content h2 {
+    color: #00ff00;
+    margin-bottom: 30px;
+    font-size: 32px;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+.settings-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.settings-group label {
+    display: block;
+    color: #00ff00;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.settings-group label small {
+    display: block;
+    color: #8e9aa1;
+    font-size: 11px;
+    font-weight: normal;
+    margin-top: 5px;
+}
+
+.settings-group output {
+    float: right;
+    color: #f0c674;
+}
+
+.settings-tabs {
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid #40515a;
+    margin: 0 -10px 22px;
+    padding: 0 10px;
+}
+
+.settings-tab {
+    background: transparent;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    color: #aab6bd;
+    cursor: pointer;
+    padding: 10px 14px;
+    text-transform: uppercase;
+}
+
+.settings-tab.active,
+.settings-tab:hover {
+    border-bottom-color: #f0c674;
+    color: #f0c674;
+}
+
+.settings-panel { display: none; }
+.settings-panel.active { display: block; }
+
+.settings-row {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+.settings-row label { margin: 0; }
+
+.settings-row input[type="checkbox"] {
+    accent-color: #f0c674;
+    height: 18px;
+    width: 18px;
+}
+
+.keybind-list { display: grid; gap: 8px; }
+
+.keybind-button {
+    background: #182126;
+    border: 1px solid #52636c;
+    color: #f0c674;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 12px;
+    text-align: left;
+    width: 100%;
+}
+
+.keybind-button.waiting { border-color: #f0c674; box-shadow: 0 0 12px rgba(240, 198, 116, .25); }
+.secondary-button { border-color: #52636c; color: #dbe4e8; font-size: 12px; width: 150px; }
+.settings-status { color: #91d18b; font-size: 12px; min-height: 18px; margin: 10px 0; }
+
+.graphics-popup {
+    align-items: center;
+    background: rgba(3, 8, 11, .78);
+    display: flex;
+    inset: 0;
+    justify-content: center;
+    position: fixed;
+    z-index: 1100;
+}
+
+.graphics-popup.hidden { display: none; }
+
+.graphics-popup-content {
+    background: #10191e;
+    border: 1px solid #f0c674;
+    box-shadow: 0 18px 60px rgba(0, 0, 0, .55);
+    max-width: 480px;
+    padding: 32px;
+    text-align: center;
+    width: calc(100vw - 32px);
+}
+
+.graphics-popup-content h2 { color: #f0c674; margin-bottom: 20px; }
+.graphics-popup-content p { color: #dbe4e8; line-height: 1.5; margin-bottom: 14px; }
+.graphics-choice-list { display: grid; gap: 8px; margin: 20px 0; }
+.graphics-choice { margin: 0 auto; width: min(280px, 100%); }
+
+.settings-group input[type="range"],
+.settings-group select {
+    width: 100%;
+    padding: 8px;
+    background: #1a1a2e;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    cursor: pointer;
+}
+
+/* Loading Screen */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+}
+
+.loading-screen.hidden {
+    display: none;
+}
+
+.loading-container {
+    text-align: center;
+    padding: 40px;
+}
+
+.loading-container h2 {
+    color: #00ff00;
+    margin-bottom: 30px;
+    font-size: 28px;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+.loading-bar-container {
+    width: 300px;
+    height: 20px;
+    border: 2px solid #00ff00;
+    margin: 20px auto;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+}
+
+.loading-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff00, #00cc00);
+    width: 0%;
+    transition: width 0.1s;
+}
+
+.loading-percent {
+    color: #00ff00;
+    margin-top: 15px;
+    font-size: 18px;
+}
+
+/* Game UI */
+.game-ui {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+.game-ui.hidden {
+    display: none;
+}
+
+.objectives-panel {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #00ff00;
+    padding: 15px;
+    color: #00ff00;
+    font-size: 12px;
+    max-width: 300px;
+}
+
+.objectives-panel h3 {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+#objectivesList {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.objective-item {
+    padding: 5px 0;
+}
+
+.objective-item.complete {
+    text-decoration: line-through;
+    color: #00cc00;
+}
+
+.health-display {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid #00ff00;
+    padding: 15px;
+    width: 200px;
+}
+
+.health-label {
+    color: #00ff00;
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.health-bar {
+    width: 100%;
+    height: 20px;
+    border: 1px solid #00ff00;
+    overflow: hidden;
+    margin-bottom: 5px;
+}
+
+.health-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #00ff00, #00cc00);
+    width: 100%;
+    transition: width 0.1s;
+}
+
+.health-text {
+    color: #00ff00;
+    font-size: 12px;
+    text-align: center;
+}
+
+.ammo-display {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    color: #00ff00;
+    font-size: 14px;
+    background: transparent;
+    border: none;
+    padding: 10px 15px;
+    opacity: 0.7;
+}
+
+/* Blood damage overlay */
+.blood-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 45%, rgba(100, 0, 0, 0) 58%, rgba(80, 0, 0, 0) 100%);
+    opacity: 0;
+    transition: opacity 0.12s ease-out;
+    box-shadow: inset 0 0 150px rgba(0, 0, 0, 0);
+}
+
+.blood-overlay.damage {
+    opacity: 0.8;
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 52%, rgba(120, 0, 0, 0.22) 66%, rgba(80, 0, 0, 0.45) 80%, rgba(35, 0, 0, 0.7) 100%);
+    box-shadow: inset 0 0 140px rgba(110, 0, 0, 0.6);
+}
+
+/* Pause Menu */
+.pause-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 500;
+}
+
+.pause-menu.hidden {
+    display: none;
+}
+
+.pause-content {
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #00ff00;
+    padding: 40px;
+    text-align: center;
+}
+
+.pause-content h2 {
+    color: #00ff00;
+    margin-bottom: 30px;
+    font-size: 36px;
+}
+
+/* Death Screen */
+.death-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(139, 0, 0, 0.8), rgba(0, 0, 0, 0.8));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 510;
+}
+
+.death-screen.hidden {
+    display: none;
+}
+
+.death-content {
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #ff4444;
+    padding: 60px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+}
+
+.death-content h2 {
+    color: #ff4444;
+    margin-bottom: 10px;
+    font-size: 42px;
+}
+
+.death-content p {
+    color: #ff8888;
+    margin-bottom: 30px;
+    font-size: 16px;
+}
+
+/* Mission Complete */
+.mission-complete {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0, 139, 0, 0.8), rgba(0, 0, 0, 0.8));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 520;
+}
+
+.mission-complete.hidden {
+    display: none;
+}
+
+.complete-content {
+    background: rgba(0, 0, 0, 0.9);
+    border: 2px solid #00ff00;
+    padding: 60px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+}
+
+.complete-content h2 {
+    color: #00ff00;
+    margin-bottom: 20px;
+    font-size: 42px;
+    text-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+}
+
+.complete-content p {
+    color: #00ff00;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
